@@ -169,7 +169,7 @@ SELECT results_eq(
     $$VALUES (
         'aaaa1111-1111-4111-8111-111111111111'::uuid,
         '11111111-1111-4111-8111-111111111111'::uuid,
-        'User A Initial Job'::text
+        'INTENTIONAL_MISMATCH_FOR_CI_CHECK'::text
     )$$,
     'Scenario 1: User A reads jobs and receives exact set of only their own record'
 );
