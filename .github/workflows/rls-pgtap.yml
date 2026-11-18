@@ -17,7 +17,7 @@ jobs:
           version: 2.122.0
 
       - name: Start local Supabase services
-        run: supabase start
+        run: supabase start > /dev/null
 
       - name: Reset database and apply migrations cleanly
         run: supabase db reset --no-seed
@@ -27,7 +27,10 @@ jobs:
         run: |
           set -euo pipefail
           supabase test db --debug 2>&1 | tee pgtap-output.log
-          grep -Eq "Files=[1-9][0-9]*, Tests=[1-9][0-9]*" pgtap-output.log
+          grep -Fq "supabase/tests/database/jobs_rls.test.sql" pgtap-output.log
+          grep -Fq "ok 9 - Scenario 1: User A reads jobs and receives exact set of only their own record" pgtap-output.log
+          grep -Fq "ok 23 - Scenario 5: User A insert with User B owner_id is rejected with SQLSTATE 42501" pgtap-output.log
+          grep -Eq "Files=1, Tests=27," pgtap-output.log
           grep -Fq "Result: PASS" pgtap-output.log
 
       - name: Stop local Supabase services

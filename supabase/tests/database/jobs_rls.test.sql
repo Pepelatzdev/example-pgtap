@@ -120,10 +120,12 @@ SELECT ok(
 SELECT is(
     (
         SELECT count(*)::int
-        FROM information_schema.role_table_grants
-        WHERE table_schema = 'public'
-          AND table_name = 'jobs'
-          AND grantee = 'PUBLIC'
+        FROM pg_class c
+        JOIN pg_namespace n ON n.oid = c.relnamespace
+        CROSS JOIN LATERAL aclexplode(COALESCE(c.relacl, acldefault('r', c.relowner))) AS a
+        WHERE n.nspname = 'public'
+          AND c.relname = 'jobs'
+          AND a.grantee = 0::oid
     ),
     0,
     'PUBLIC has no inherited table grants on public.jobs'

@@ -49,13 +49,13 @@ cd example-pgtap
 # 2. Verify Supabase CLI version (2.122.0)
 supabase --version
 
-# 3. Start local Supabase stack
-supabase start
+# 3. Start local Supabase stack (redirect stdout to avoid printing local keys/connection strings)
+supabase start > /dev/null
 
 # 4. Reset database to a clean state and apply migrations
 supabase db reset --no-seed
 
-# 5. Execute the pgTAP test suite (with verbose assertion output)
+# 5. Execute the pgTAP test suite (outputs jobs_rls.test.sql, 1..27 plan, all 27 assertions, and Result: PASS)
 supabase test db --debug
 
 # 6. Stop local Supabase stack and remove containers
