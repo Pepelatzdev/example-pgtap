@@ -1,0 +1,35 @@
+name: Verify RLS with pgTAP
+
+on:
+  pull_request:
+
+jobs:
+  rls-pgtap:
+    name: Run Supabase pgTAP RLS Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.122.0
+
+      - name: Start local Supabase services
+        run: supabase start
+
+      - name: Reset database and apply migrations cleanly
+        run: supabase db reset --no-seed
+
+      - name: Run pgTAP database tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          supabase test db --debug 2>&1 | tee pgtap-output.log
+          grep -Eq "Files=[1-9][0-9]*, Tests=[1-9][0-9]*" pgtap-output.log
+          grep -Fq "Result: PASS" pgtap-output.log
+
+      - name: Stop local Supabase services
+        if: always()
+        run: supabase stop --no-backup
