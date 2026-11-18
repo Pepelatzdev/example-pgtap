@@ -21,7 +21,7 @@ The migration [`supabase/migrations/20260101000000_create_jobs_rls.sql`](supabas
 
 ## Tested Scenarios (`supabase/tests/database/jobs_rls.test.sql`)
 
-All fixtures (fictional Users A and B and their initial job records) and role/JWT helper functions are created inside a single isolated transaction and rolled back at the end of the suite (`BEGIN` ... `SELECT * FROM finish(true)` ... `ROLLBACK`). Before each scenario, the test explicitly switches roles and JWT claims and asserts both `current_user` and `auth.uid()`:
+All fixtures (fictional Users A and B and their initial job records) and role/JWT helper functions are created inside a single isolated transaction and rolled back at the end of the suite (`BEGIN` ... `SELECT * FROM finish(true)` ... `ROLLBACK`). The suite sets the database role and JWT claims directly to test PostgreSQL policies for each user. Before each scenario, the test explicitly switches roles and JWT claims and asserts both `current_user` and `auth.uid()`:
 
 | Scenario | Action | Expected Outcome |
 |---|---|---|
